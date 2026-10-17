@@ -15,5 +15,9 @@ export const users = pgTable("users", {
         length: 255,
     }).notNull(),
 
+    role: varchar("role", {
+        length: 10
+    }).notNull().default("buyer"),
+
     createdAt: timestamp("created_at").defaultNow(),
 });
