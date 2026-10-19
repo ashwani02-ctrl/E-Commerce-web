@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import authRoutes from "./routes/auth.js";
 
 dotenv.config();
 
@@ -17,6 +18,7 @@ server.use(
 );
 
 server.use(express.json());
+server.use("/auth", authRoutes);
 
 server.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
