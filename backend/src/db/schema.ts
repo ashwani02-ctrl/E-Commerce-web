@@ -34,3 +34,8 @@ export const passwordResets = pgTable("password_resets", {
 
     expiresAt: timestamp("expires_at").notNull(),
 });
+
+export const revokedTokens = pgTable("revoked_tokens", {
+  jti: varchar("jti", { length: 64 }).primaryKey(),
+  expiresAt: timestamp("expires_at").notNull(),
+}); 

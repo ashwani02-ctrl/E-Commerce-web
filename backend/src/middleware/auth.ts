@@ -1,17 +1,32 @@
 import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import { db } from "../db/index.js";
+import { revokedTokens } from "../db/schema.js";
+import { eq } from "drizzle-orm";
 
-export function requireAuth(req: Request, res: Response, next: NextFunction){
+export async function requireAuth(req: Request, res: Response, next: NextFunction){
     const header = req.headers.authorization;
     const token = header?.split("")[1];
 
     if(!token) { return res.status(401).json({error: "not logged in"}); }
 
-    try {
-        (req as any).user = jwt.verify(token, process.env.JWT_SECRET!);
+    try{
+        const payload = jwt.verify(token, process.env.JWT_SECRET!) as jwt.JwtPayload;
+
+        const [revoked] = await db
+        .select()
+        .from(revokedTokens)
+        .where(eq(revokedTokens.jti, payload.jti ?? ""));
+
+        if(revoked){
+            return res.status(401).json({error: "Logged out, please log in again"});
+
+        }
+
+        (req as any).user = payload;
         next();
     }catch{
-        res.status(401).json({error: "Invalid token"});
+        return res.status(401).json({error: "Invalid token"});
     }
 }
 
