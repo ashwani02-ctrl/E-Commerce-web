@@ -1,5 +1,5 @@
 
-import { integer, serial, varchar, timestamp, pgTable, text, boolean, real, jsonb } from "drizzle-orm/pg-core";
+import { integer, serial, varchar, timestamp, pgTable, text, boolean, real, jsonb, index } from "drizzle-orm/pg-core";
 
 
 export const users = pgTable("users", {
@@ -49,6 +49,8 @@ export const stores = pgTable("stores", {
     .references(() => users.id, {onDelete: "cascade"}),
     name: varchar("name", {length: 100}).notNull(),
     slug: varchar("slug", {length: 100}).notNull().unique(),
+    description: text("description"),
+    createdAt: timestamp("created_at").defaultNow(),
 });
 
 export const products = pgTable("products", {
@@ -68,5 +70,11 @@ export const products = pgTable("products", {
     discountPercent: real("discount_percent"),
     images: jsonb("images").$type<string[]>().default([]),
     tags: jsonb("tags").$type<string[]>().default([]),
+    updatedAt: timestamp("updated_at").defaultNow().$onUpdate(() => new Date()),
+},
+ (table) => [
+        index("products_store_idx").on(table.storeId),
+        index("products_category_idx").on(table.category),
+    ]
 
-})
+)

@@ -3,8 +3,10 @@ import express from "express";
 import cors from "cors";
 import authRoutes from "./routes/auth.js";
 import productRoutes from "./routes/products.js";
+import sellerRoutes from "./routes/seller.js";
 import helmet from "helmet";
 import { authLimiter } from "./middleware/rateLimiter.js";
+import { requireAuth, requireRole } from "./middleware/auth.js";
 
 const server = express();
 
@@ -31,6 +33,10 @@ server.get("/health", (req, res) => {
 server.use("/auth", authLimiter, authRoutes);
 
 server.use("/products", productRoutes);
+
+server.use("/seller", requireAuth, requireRole("seller"), sellerRoutes);
+
+
 
 server.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);

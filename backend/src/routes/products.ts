@@ -6,14 +6,14 @@ import { listQuery } from "../schemas/product.schema.js";
 import { validate } from "../middleware/validate.js";
 import type z from "zod";
 import { error } from "console";
+import { finalPrice } from "../utils/price.js";
 
 
 
 
 const router = Router();
 
-const finalPrice = (price: number, discountPercent: number | null) =>
-    discountPercent ? Math.round(price * (1 - discountPercent / 100)) : price;
+
 
 /* GET /products/categories */
 router.get("/categories", async (req, res) => {
