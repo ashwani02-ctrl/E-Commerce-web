@@ -2,8 +2,8 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import authRoutes from "./routes/auth.js";
+import productRoutes from "./routes/products.js";
 import helmet from "helmet";
-import rateLimit from "express-rate-limit";
 import { authLimiter } from "./middleware/rateLimiter.js";
 
 const server = express();
@@ -29,6 +29,8 @@ server.get("/health", (req, res) => {
 });
 
 server.use("/auth", authLimiter, authRoutes);
+
+server.use("/products", productRoutes);
 
 server.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);

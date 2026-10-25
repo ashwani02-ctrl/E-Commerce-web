@@ -6,7 +6,7 @@ import { eq } from "drizzle-orm";
 
 export async function requireAuth(req: Request, res: Response, next: NextFunction){
     const header = req.headers.authorization;
-    const token = header?.split("")[1];
+    const token = header?.split(" ")[1];
 
     if(!token) { return res.status(401).json({error: "not logged in"}); }
 
@@ -30,7 +30,7 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
     }
 }
 
-export function requireRole(role: "buyer" | "seller"){
+export function requireRole(role: "buyer" | "seller" | "admin"){
     return (req: Request, res: Response, next: NextFunction) => {
         if((req as any).user.role !== role) {
             return res.status(403).json({error: "Not allowed"});
