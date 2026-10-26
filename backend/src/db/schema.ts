@@ -78,3 +78,27 @@ export const products = pgTable("products", {
     ]
 
 )
+
+export const orders = pgTable(
+  "orders",
+  {
+    id: serial("id").primaryKey(),
+    buyerId: integer("buyer_id").notNull().references(() => users.id),
+    storeId: integer("store_id").references(() => stores.id), // empty = platform order
+    status: varchar("status", { length: 20 }).notNull().default("pending"),
+    total: integer("total").notNull(),
+    shippingAddress: text("shipping_address").notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow().$onUpdate(() => new Date()),
+  },
+  (t) => [index("orders_store_status_idx").on(t.storeId, t.status), index("orders_buyer_idx").on(t.buyerId)]
+);
+
+export const orderItems = pgTable("order_items", {
+  id: serial("id").primaryKey(),
+  orderId: integer("order_id").notNull().references(() => orders.id, { onDelete: "cascade" }),
+  productId: integer("product_id").notNull().references(() => products.id),
+  titleSnapshot: varchar("title_snapshot", { length: 150 }).notNull(),
+  priceSnapshot: integer("price_snapshot").notNull(),
+  quantity: integer("quantity").notNull(),
+});

@@ -5,15 +5,9 @@ import { and, asc, count, desc, eq, ilike, or, sql } from "drizzle-orm";
 import { listQuery } from "../schemas/product.schema.js";
 import { validate } from "../middleware/validate.js";
 import type z from "zod";
-import { error } from "console";
 import { finalPrice } from "../utils/price.js";
 
-
-
-
 const router = Router();
-
-
 
 /* GET /products/categories */
 router.get("/categories", async (req, res) => {
