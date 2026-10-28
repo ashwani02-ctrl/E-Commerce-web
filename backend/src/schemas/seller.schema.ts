@@ -22,7 +22,7 @@ export const updateStoreSchema = storeSchema
 export const createProductSchema = z.object({
   title: z.string().trim().min(2).max(150),
   description: z.string().trim().max(2000).optional(),
-  priceCents: z.number().int().positive().max(100_000_000),
+  price: z.number().int().positive().max(100_000_000),
   stock: z.number().int().min(0).max(100_000),
   category: z.string().trim().max(50).optional(),
   brand: z.string().trim().max(100).optional(),

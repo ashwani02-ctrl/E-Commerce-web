@@ -129,7 +129,7 @@ router.get("/:id", async(req, res) => {
 
     return res.json({
       ...product,
-      finalPriceCents: finalPrice(product.price, product.discountPercent),
+      finalPrice: finalPrice(product.price, product.discountPercent),
       seller: storeSlug ? { name: storeName, slug: storeSlug } : null, // null = sold by the platform
 
     });

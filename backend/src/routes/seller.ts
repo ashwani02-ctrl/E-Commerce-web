@@ -3,20 +3,16 @@ import { validate } from "../middleware/validate.js";
 import { createProductSchema, idParams, sellerOrdersQuery, slugify, storeSchema, updateOrderStatusSchema, updateProductSchema, updateStoreSchema } from "../schemas/seller.schema.js";
 import { db } from "../db/index.js";
 import { orderItems, orders, products, stores, users } from "../db/schema.js";
-import { and, count, desc, eq, inArray } from "drizzle-orm";
+import { and, asc, count, desc, eq, ilike, inArray, or, sql } from "drizzle-orm";
 import crypto from "crypto";
 import type z from "zod";
+import { getStoreId } from "../utils/storeid.js";
+import { listQuery } from "../schemas/product.schema.js";
 
 
 const router = Router();
 
-const getStoreId = async (sellerId: number) => {
-  const [store] = await db
-    .select({ id: stores.id })
-    .from(stores)
-    .where(eq(stores.sellerId, sellerId));
-  return store?.id ?? null;
-};
+
 
 /* POST /seller/store */
 router.post("/store", validate(storeSchema), async (req, res) => {
@@ -96,7 +92,7 @@ router.get("/store", async (req, res) => {
   }
 });
 
-/* /seller/store */
+/* PUT /seller/store */
 
 router.put("/store", validate(updateStoreSchema), async (req, res) => {
   const sellerId = (req as any).user.id as number;
@@ -125,9 +121,9 @@ router.put("/store", validate(updateStoreSchema), async (req, res) => {
 });
 
 
-/* POST /seller/products */
+/* POST /seller/product */
 
-router.post("/products", validate(createProductSchema), async (req, res) => {
+router.post("/product", validate(createProductSchema), async (req, res) => {
   const sellerId = (req as any).user.id as number;
 
   try {
@@ -152,9 +148,74 @@ router.post("/products", validate(createProductSchema), async (req, res) => {
   }
 });
 
-// PUT /seller/products/:id
+// GET /seller/products?search=&category=&sort=&page=&limit=
+router.get("/products", validate(listQuery, "query"), async (req, res) => {
+  const sellerId = (req as any).user.id as number;
+  const { search, category, sort, page, limit } =
+    res.locals.query as z.infer<typeof listQuery>;
+
+  try {
+    const storeId = await getStoreId(sellerId);
+    if (!storeId) {
+      return res.status(403).json({ error: "Set up your store first" });
+    }
+
+    const conditions = [eq(products.storeId, storeId), eq(products.isActive, true)];
+
+    if (search) {
+      const term = `%${search.replace(/[%_\\]/g, "\\$&")}%`;
+      conditions.push(
+        or(
+          ilike(products.title, term),
+          ilike(products.brand, term),
+          ilike(products.description, term)
+        )!
+      );
+    }
+
+    if (category) {
+      conditions.push(eq(products.category, category));
+    }
+
+    const where = and(...conditions);
+
+    const orderBy = {
+      newest: desc(products.id),
+      oldest: asc(products.id),
+      price_asc: asc(products.price),
+      price_desc: desc(products.price),
+      rating: sql`${products.rating} DESC NULLS LAST`,
+    }[sort];
+
+    const [rows, totalRows] = await Promise.all([
+      db
+        .select()
+        .from(products)
+        .where(where)
+        .orderBy(orderBy, asc(products.id))
+        .limit(limit)
+        .offset((page - 1) * limit),
+      db.select({ total: count() }).from(products).where(where),
+    ]);
+
+    const total = totalRows[0]?.total ?? 0;
+
+    return res.json({
+      products: rows,
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    });
+  } catch (err: any) {
+    console.error("List seller products failed:", err.cause ?? err);
+    return res.status(500).json({ error: "Something went wrong" });
+  }
+});
+
+// PUT /seller/product/:id
 router.put(
-  "/products/:id",
+  "/product/:id",
   validate(idParams, "params"),
   validate(updateProductSchema),
   async (req, res) => {
@@ -191,8 +252,8 @@ router.put(
   }
 );
 
-// DELETE /seller/products/:id  (soft delete)
-router.delete("/products/:id", validate(idParams, "params"), async (req, res) => {
+// DELETE /seller/product/:id  (soft delete)
+router.delete("/product/:id", validate(idParams, "params"), async (req, res) => {
   const sellerId = (req as any).user.id as number;
   const { id } = res.locals.params as z.infer<typeof idParams>;
 
@@ -243,7 +304,7 @@ router.get("/orders", validate(sellerOrdersQuery, "query"), async (req, res) => 
         .select({
           id: orders.id,
           status: orders.status,
-          totalCents: orders.total,
+          total: orders.total,
           shippingAddress: orders.shippingAddress,
           createdAt: orders.createdAt,
           buyerName: users.name,
@@ -260,7 +321,9 @@ router.get("/orders", validate(sellerOrdersQuery, "query"), async (req, res) => 
     // load the items for just these orders
     const ids = rows.map((r) => r.id);
     const items = ids.length
-      ? await db.select().from(orderItems).where(inArray(orderItems.orderId, ids))
+      ? await db.select()
+      .from(orderItems)
+      .where(inArray(orderItems.orderId, ids))
       : [];
 
     const byOrder = new Map<number, typeof items>();
@@ -271,7 +334,8 @@ router.get("/orders", validate(sellerOrdersQuery, "query"), async (req, res) => 
     const total = totalRows[0]?.total ?? 0;
 
     return res.json({
-      orders: rows.map((o) => ({ ...o, items: byOrder.get(o.id) ?? [] })),
+      orders: rows.map((o) => 
+        ({ ...o, items: byOrder.get(o.id) ?? [] })),
       page,
       limit,
       total,

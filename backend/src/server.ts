@@ -4,6 +4,7 @@ import cors from "cors";
 import authRoutes from "./routes/auth.js";
 import productRoutes from "./routes/products.js";
 import sellerRoutes from "./routes/seller.js";
+import buyerRoutes from "./routes/buyer.js";
 import helmet from "helmet";
 import { authLimiter } from "./middleware/rateLimiter.js";
 import { requireAuth, requireRole } from "./middleware/auth.js";
@@ -35,6 +36,8 @@ server.use("/auth", authLimiter, authRoutes);
 server.use("/products", productRoutes);
 
 server.use("/seller", requireAuth, requireRole("seller"), sellerRoutes);
+
+server.use("/buyer", requireAuth, requireRole("buyer"), buyerRoutes);
 
 
 
