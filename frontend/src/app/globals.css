@@ -2,285 +2,354 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-/* Makes `dark:` utilities follow the .dark class instead of the OS setting */
+/* Makes dark: utilities follow the .dark class */
 @custom-variant dark (&:is(.dark *));
 
+
+/* =========================================
+   1. BAZZAR BRAND COLORS
+   ========================================= */
+
 :root {
-  /* Light theme: warm paper, deep green primary */
+  /* Brand colors from Bazzar logo */
+  --brand-blue: #0750DF;       /* Bazzar Blue */
+  --brand-blue-light: #1764F5; /* Bright Blue */
+  --brand-orange: #FF981B;     /* Bazzar Orange */
+  --brand-navy: #061A49;       /* Bazzar Navy */
 
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-
-  /* Order status: pending / shipped / delivered / cancelled */
-  --status-pending: #fdf0d5;
-  --status-pending-foreground: #7a4d00;
-  --status-shipped: #dbeafe;
-  --status-shipped-foreground: #1e3a8a;
-  --status-delivered: #d9f2e6;
-  --status-delivered-foreground: #0b5a3f;
-  --status-cancelled: #eeeeee;
-  --status-cancelled-foreground: #444444;
-
-  /* Feedback */
-  --success: #0f6e56;
-  --warning: #b45309;
-  --danger: #b42318;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  /* Additional neutral brand colors */
+  --brand-white: #FFFFFF;      /* Pure White */
+  --brand-black: #111827;      /* Soft Black */
+  --brand-gray: #6B7280;       /* Neutral Gray */
 }
+
+
+/* =========================================
+   2. LIGHT THEME
+   Neutral foundation with brand accents
+   ========================================= */
+
+:root {
+
+  /* Backgrounds */
+  --background: #FFFFFF;       /* Pure White */
+  --foreground: #171717;       /* Near Black */
+
+  /* Cards */
+  --card: #FFFFFF;             /* Pure White */
+  --card-foreground: #171717;  /* Near Black */
+
+  /* Popovers / Dropdowns */
+  --popover: #FFFFFF;          /* Pure White */
+  --popover-foreground: #171717; /* Near Black */
+
+  /* Primary actions */
+  --primary: #0750DF;          /* Bazzar Blue */
+  --primary-foreground: #FFFFFF; /* Pure White */
+
+  /* Secondary elements */
+  --secondary: #F3F4F6;        /* Light Gray */
+  --secondary-foreground: #1F2937; /* Charcoal */
+
+  /* Muted elements */
+  --muted: #F5F5F5;             /* Soft Gray */
+  --muted-foreground: #737373;  /* Medium Gray */
+
+  /* Accent elements */
+  --accent: #FFF3E0;            /* Light Orange Tint */
+  --accent-foreground: #9A4D00; /* Deep Orange Brown */
+
+  /* Borders and inputs */
+  --border: #E5E7EB;            /* Light Border Gray */
+  --input: #D1D5DB;             /* Input Gray */
+  --ring: #1764F5;              /* Bazzar Bright Blue */
+
+  /* Destructive */
+  --destructive: #DC2626;       /* Error Red */
+
+  /* Feedback colors */
+  --success: #15803D;           /* Success Green */
+  --warning: #D97706;           /* Warning Amber */
+  --danger: #DC2626;            /* Danger Red */
+
+  /* Order statuses */
+  --status-pending: #FEF3C7;    /* Light Amber */
+  --status-pending-foreground: #92400E; /* Dark Amber */
+
+  --status-shipped: #DBEAFE;    /* Light Blue */
+  --status-shipped-foreground: #1E40AF; /* Dark Blue */
+
+  --status-delivered: #DCFCE7;  /* Light Green */
+  --status-delivered-foreground: #166534; /* Dark Green */
+
+  --status-cancelled: #F3F4F6;  /* Light Gray */
+  --status-cancelled-foreground: #4B5563; /* Dark Gray */
+
+  /* Charts */
+  --chart-1: #0750DF;            /* Bazzar Blue */
+  --chart-2: #FF981B;            /* Bazzar Orange */
+  --chart-3: #061A49;            /* Bazzar Navy */
+  --chart-4: #16A34A;            /* Green */
+  --chart-5: #8B5CF6;            /* Violet */
+
+  /* General settings */
+  --radius: 0.625rem;            /* 10px Base Radius */
+
+  /* Sidebar */
+  --sidebar: #FAFAFA;            /* Off White */
+  --sidebar-foreground: #171717; /* Near Black */
+  --sidebar-primary: #0750DF;    /* Bazzar Blue */
+  --sidebar-primary-foreground: #FFFFFF; /* Pure White */
+  --sidebar-accent: #F3F4F6;     /* Light Gray */
+  --sidebar-accent-foreground: #171717; /* Near Black */
+  --sidebar-border: #E5E7EB;     /* Light Border Gray */
+  --sidebar-ring: #1764F5;       /* Bazzar Bright Blue */
+}
+
+
+/* =========================================
+   3. DARK THEME
+   ========================================= */
 
 .dark {
-  /* Dark theme: warm charcoal, mint primary */
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
 
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
+  /* Backgrounds */
+  --background: #111827;         /* Dark Charcoal */
+  --foreground: #F9FAFB;         /* Off White */
 
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
+  /* Cards */
+  --card: #1F2937;                /* Dark Slate */
+  --card-foreground: #F9FAFB;    /* Off White */
 
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
+  /* Popovers */
+  --popover: #1F2937;             /* Dark Slate */
+  --popover-foreground: #F9FAFB;  /* Off White */
 
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
+  /* Primary actions */
+  --primary: #3B82F6;             /* Bright Blue */
+  --primary-foreground: #FFFFFF;  /* Pure White */
 
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
+  /* Secondary */
+  --secondary: #374151;           /* Slate Gray */
+  --secondary-foreground: #F9FAFB; /* Off White */
 
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
+  /* Muted */
+  --muted: #374151;               /* Slate Gray */
+  --muted-foreground: #9CA3AF;    /* Cool Gray */
 
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
+  /* Accent */
+  --accent: #422D18;              /* Dark Orange Brown */
+  --accent-foreground: #FDBA74;   /* Light Orange */
 
-  --status-pending: #3a2a0c;
-  --status-pending-foreground: #fbd38d;
-  --status-shipped: #172a4d;
-  --status-shipped-foreground: #9ec5fe;
-  --status-delivered: #123a2d;
-  --status-delivered-foreground: #a7ecd0;
-  --status-cancelled: #2b2824;
-  --status-cancelled-foreground: #c9c2b6;
+  /* Borders and inputs */
+  --border: #374151;              /* Dark Border Gray */
+  --input: #4B5563;               /* Medium Dark Gray */
+  --ring: #60A5FA;                /* Light Blue */
 
-  --success: #3ecf9e;
-  --warning: #fbbf24;
-  --danger: #f87171;
-  --destructive: oklch(0.704 0.191 22.216);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  /* Destructive */
+  --destructive: #F87171;         /* Light Red */
+
+  /* Feedback */
+  --success: #4ADE80;             /* Bright Green */
+  --warning: #FBBF24;             /* Bright Amber */
+  --danger: #F87171;              /* Light Red */
+
+  /* Order statuses */
+  --status-pending: #422D18;      /* Dark Amber Brown */
+  --status-pending-foreground: #FCD34D; /* Light Amber */
+
+  --status-shipped: #172554;      /* Dark Blue */
+  --status-shipped-foreground: #93C5FD; /* Light Blue */
+
+  --status-delivered: #14532D;    /* Dark Green */
+  --status-delivered-foreground: #86EFAC; /* Light Green */
+
+  --status-cancelled: #374151;    /* Slate Gray */
+  --status-cancelled-foreground: #D1D5DB; /* Light Gray */
+
+  /* Charts */
+  --chart-1: #60A5FA;             /* Light Blue */
+  --chart-2: #FDBA74;             /* Light Orange */
+  --chart-3: #A5B4FC;             /* Light Indigo */
+  --chart-4: #4ADE80;             /* Bright Green */
+  --chart-5: #C4B5FD;             /* Light Violet */
+
+  /* Sidebar */
+  --sidebar: #1F2937;             /* Dark Slate */
+  --sidebar-foreground: #F9FAFB;  /* Off White */
+  --sidebar-primary: #3B82F6;     /* Bright Blue */
+  --sidebar-primary-foreground: #FFFFFF; /* Pure White */
+  --sidebar-accent: #374151;      /* Slate Gray */
+  --sidebar-accent-foreground: #F9FAFB; /* Off White */
+  --sidebar-border: #374151;      /* Dark Border Gray */
+  --sidebar-ring: #60A5FA;        /* Light Blue */
 }
 
+
+/* =========================================
+   4. TAILWIND THEME MAPPING
+   ========================================= */
+
 @theme inline {
+
+  /* Typography */
+  --font-sans: var(--font-roboto);
+  --font-heading: var(--font-roboto);
+
+  /* Brand colors */
+  --color-brand-blue: var(--brand-blue);
+  --color-brand-blue-light: var(--brand-blue-light);
+  --color-brand-orange: var(--brand-orange);
+  --color-brand-navy: var(--brand-navy);
+
+  /* Background and foreground */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
 
+  /* Card */
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
 
+  /* Popover */
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
 
+  /* Primary */
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
 
+  /* Secondary */
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
 
+  /* Muted */
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
 
+  /* Accent */
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
 
+  /* Borders */
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  --color-status-pending: var(--status-pending);
-  --color-status-pending-foreground: var(--status-pending-foreground);
-  --color-status-shipped: var(--status-shipped);
-  --color-status-shipped-foreground: var(--status-shipped-foreground);
-  --color-status-delivered: var(--status-delivered);
-  --color-status-delivered-foreground: var(--status-delivered-foreground);
-  --color-status-cancelled: var(--status-cancelled);
-  --color-status-cancelled-foreground: var(--status-cancelled-foreground);
-
+  /* Feedback */
   --color-success: var(--success);
   --color-warning: var(--warning);
   --color-danger: var(--danger);
-
-  --radius-card: 14px;
-  --radius-control: 10px;
-
-  --font-sans: var(--font-roboto);
-
-  --font-heading: var(--font-roboto);
-
-  --color-sidebar-ring: var(--sidebar-ring);
-
-  --color-sidebar-border: var(--sidebar-border);
-
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-
-  --color-sidebar-accent: var(--sidebar-accent);
-
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-
-  --color-sidebar-primary: var(--sidebar-primary);
-
-  --color-sidebar-foreground: var(--sidebar-foreground);
-
-  --color-sidebar: var(--sidebar);
-
-  --color-chart-5: var(--chart-5);
-
-  --color-chart-4: var(--chart-4);
-
-  --color-chart-3: var(--chart-3);
-
-  --color-chart-2: var(--chart-2);
-
-  --color-chart-1: var(--chart-1);
-
   --color-destructive: var(--destructive);
 
+  /* Order status */
+  --color-status-pending: var(--status-pending);
+  --color-status-pending-foreground: var(--status-pending-foreground);
+
+  --color-status-shipped: var(--status-shipped);
+  --color-status-shipped-foreground: var(--status-shipped-foreground);
+
+  --color-status-delivered: var(--status-delivered);
+  --color-status-delivered-foreground: var(--status-delivered-foreground);
+
+  --color-status-cancelled: var(--status-cancelled);
+  --color-status-cancelled-foreground: var(--status-cancelled-foreground);
+
+  /* Charts */
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  /* Sidebar */
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Border radius */
   --radius-sm: calc(var(--radius) * 0.6);
-
   --radius-md: calc(var(--radius) * 0.8);
-
   --radius-lg: var(--radius);
-
   --radius-xl: calc(var(--radius) * 1.4);
-
   --radius-2xl: calc(var(--radius) * 1.8);
-
   --radius-3xl: calc(var(--radius) * 2.2);
-
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+
+/* =========================================
+   5. BASE STYLES
+   ========================================= */
+
 @layer base {
+
   * {
-    border-color: var(--border);
     @apply border-border outline-ring/50;
   }
 
+  html {
+    @apply font-sans;
+  }
+
   body {
-    background: var(--background);
-    color: var(--foreground);
+    @apply bg-background text-foreground;
     font-family: var(--font-roboto);
     -webkit-font-smoothing: antialiased;
-    @apply bg-background text-foreground;
+  }
+
+  button {
+    cursor: pointer;
   }
 
   :focus-visible {
     outline: 2px solid var(--ring);
     outline-offset: 2px;
   }
-  html {
-    @apply font-sans;
+
+  ::selection {
+    background: var(--brand-blue);
+    color: #FFFFFF; /* Pure White */
   }
 }
 
-/* Reusable pieces from the UI mockups */
-@layer components {
-  .card {
-    background: var(--card);
-    color: var(--card-foreground);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-card);
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-40px);
   }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
 
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 44px;
-    padding: 0 20px;
-    border-radius: var(--radius-control);
-    border: 1px solid var(--primary);
-    background: var(--primary);
-    color: var(--primary-foreground);
-    font-weight: 600;
-    cursor: pointer;
+@keyframes logoShake {
+  0%, 100% {
+    transform: rotate(0deg) scale(1);
   }
-  .btn-outline {
-    background: transparent;
-    color: var(--primary);
+  10% {
+    transform: rotate(-5deg) scale(1.02);
   }
-  .btn-danger {
-    background: transparent;
-    border-color: var(--danger);
-    color: var(--danger);
+  20% {
+    transform: rotate(5deg) scale(1.04);
   }
+  30% {
+    transform: rotate(-4deg) scale(1.02);
+  }
+  40% {
+    transform: rotate(4deg) scale(1.02);
+  }
+  50% {
+    transform: rotate(0deg) scale(1);
+  }
+}
 
-  .input {
-    width: 100%;
-    min-height: 44px;
-    padding: 0 14px;
-    background: var(--card);
-    color: var(--foreground);
-    border: 1px solid var(--input);
-    border-radius: var(--radius-control);
-  }
-
-  .badge {
-    display: inline-block;
-    padding: 4px 12px;
-    border-radius: 999px;
-    font-size: 13px;
-    font-weight: 600;
-  }
-  .badge-pending   { background: var(--status-pending);   color: var(--status-pending-foreground); }
-  .badge-shipped   { background: var(--status-shipped);   color: var(--status-shipped-foreground); }
-  .badge-delivered { background: var(--status-delivered); color: var(--status-delivered-foreground); }
-  .badge-cancelled { background: var(--status-cancelled); color: var(--status-cancelled-foreground); }
+.logo-bounce {
+  animation: logoShake 10s ease-in-out infinite;
+  transform-origin: center;
 }
