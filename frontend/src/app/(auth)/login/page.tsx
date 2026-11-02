@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { LoginCard } from "@/components/comp/logincard";
+import { LoginCard } from "@/app/_components/login/logincard";
 import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { homePathForRole, useAuth } from "@/providers/AuthProvider";

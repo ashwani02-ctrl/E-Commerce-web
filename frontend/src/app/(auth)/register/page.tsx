@@ -14,7 +14,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { LoginCard } from "@/components/comp/logincard";
+import { LoginCard } from "@/app/_components/login/logincard";
 import { useAuth } from "@/providers/AuthProvider";
 import { getSafeNext, homePathForRole } from "@/lib/session";
 import { ApiError, errorMessage } from "@/lib/api";
@@ -81,14 +81,9 @@ export default function RegisterPage() {
       return;
     }
  
-    // the account exists now: log in straight away, then the effect above redirects by role
-    try {
-      await login(email.trim(), password);
-    } catch {
-      router.push("/login"); // account was created, so just ask them to log in
-    } finally {
-      setSubmitting(false);
-    }
+    // the account exists now: go to the login page so the user can sign in cleanly
+    router.push("/login");
+    setSubmitting(false);
   }
  
   return (

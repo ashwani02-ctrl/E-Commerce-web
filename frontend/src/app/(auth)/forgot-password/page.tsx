@@ -13,7 +13,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { LoginCard } from "@/components/comp/logincard";
+import { LoginCard } from "@/app/_components/login/logincard";
 import { ApiError, api, errorMessage } from "@/lib/api";
 import { validateEmail } from "@/lib/validation";
 import type { MessageResponse } from "@/types/api";
