@@ -54,8 +54,8 @@ export interface RegisterInput {
 export interface ProductSummary {
   id: number;
   title: string;
-  priceCents: number;
-  finalPriceCents: number;
+  price: number;
+  finalPrice: number;
   discountPercent: number | null;
   rating: number | null;
   category: string | null;
@@ -84,7 +84,7 @@ export interface Product {
   storeId: number | null;
   title: string;
   description: string | null;
-  priceCents: number;
+  price: number;
   stock: number;
   category: string | null;
   brand: string | null;
@@ -100,7 +100,7 @@ export interface Product {
  
 /** GET /products/:id */
 export interface ProductDetail extends Product {
-  finalPriceCents: number;
+  finalPrice: number;
   seller: SellerRef | null;
 }
  
@@ -108,7 +108,7 @@ export interface ProductDetail extends Product {
 export interface ProductInput {
   title: string;
   description?: string;
-  priceCents: number;
+  price: number;
   stock: number;
   category?: string;
   brand?: string;
@@ -171,15 +171,15 @@ export interface CartItem {
   title: string | null;
   imageUrl: string | null;
   stock: number;
-  unitPriceCents: number;
-  lineTotalCents: number;
+  unitPrice: number;
+  lineTotal: number;
   seller: SellerRef | null;
 }
  
 export interface Cart {
   items: CartItem[];
   itemCount: number;
-  subtotalCents: number;
+  subtotal: number;
 }
  
 /* ---------- orders ---------- */
@@ -194,15 +194,15 @@ export interface OrderListParams {
 export interface OrderItem {
   productId: number;
   title: string;
-  unitPriceCents: number;
+  unitPrice: number;
   quantity: number;
-  lineTotalCents: number;
+  lineTotal: number;
 }
  
 export interface BuyerOrder {
   id: number;
   status: OrderStatus;
-  totalCents: number;
+  total: number;
   shippingAddress: string;
   createdAt: string | null;
   seller: SellerRef | null;
@@ -223,8 +223,8 @@ export interface CheckoutInput {
  
 /** One order is created per seller, so checkout can return several */
 export interface CheckoutResponse {
-  orders: { orderId: number; totalCents: number }[];
-  grandTotalCents: number;
+  orders: { orderId: number; total: number }[];
+  grandTotal: number;
 }
  
 /** In the `details` of a 409 from POST /buyer/checkout */
@@ -240,14 +240,14 @@ export interface SellerOrderItem {
   orderId: number;
   productId: number;
   titleSnapshot: string;
-  priceCentsSnapshot: number;
+  priceSnapshot: number;
   quantity: number;
 }
  
 export interface SellerOrder {
   id: number;
   status: OrderStatus;
-  totalCents: number;
+  total: number;
   shippingAddress: string;
   createdAt: string | null;
   buyerName: string;
