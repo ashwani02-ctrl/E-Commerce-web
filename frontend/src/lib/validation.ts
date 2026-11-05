@@ -1,5 +1,5 @@
 import type { ProductInput } from "@/types/api";
-import { rupeesToCents } from "./format";
+
 
 // These mirror the backend's Zod rules, so users get instant feedback.
 // The backend still checks everything again.
@@ -82,7 +82,6 @@ const isUrl = (value: string): boolean => {
   }
 };
 
-/** Returns field errors, or the body ready to send (price already converted to cents) */
 export function validateProductForm(values: ProductFormValues): {
   errors: Record<string, string>;
   data?: ProductInput;
@@ -95,9 +94,8 @@ export function validateProductForm(values: ProductFormValues): {
   const description = values.description.trim();
   if (description.length > 2000) errors.description = "Description can be at most 2000 characters";
 
-  const rupees = Number(values.price);
-  const priceCents = rupeesToCents(rupees);
-  if (!values.price.trim() || !Number.isFinite(rupees) || priceCents <= 0 || priceCents > 100_000_000) {
+  const price = Number(values.price);
+  if (!values.price.trim() || !Number.isFinite(price) || price <= 0 || price > 100_000_000) {
     errors.price = "Enter a price above 0 (up to ₹10,00,000)";
   }
 
@@ -133,7 +131,7 @@ export function validateProductForm(values: ProductFormValues): {
 
   if (Object.keys(errors).length > 0) return { errors };
 
-  const data: ProductInput = { title, priceCents, stock };
+  const data: ProductInput = { title, price, stock };
   if (description) data.description = description;
   if (category) data.category = category;
   if (brand) data.brand = brand;

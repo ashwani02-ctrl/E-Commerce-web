@@ -7,29 +7,29 @@ const TOKEN_KEY = "bazaar_token";
 /* ---------- token storage (the only place that touches it) ---------- */
 
 export const getToken = (): string | null => {
-    if (typeof window === "undefined") return null;
-
-    try {
-        return window.localStorage.getItem(TOKEN_KEY);
-
-    } catch {
+    if(typeof window === "undefined"){
         return null;
     }
-};
+    try{
+        return window.localStorage.getItem(TOKEN_KEY);
+    }catch{
+        return null;
+    }
+}
 
 export const setToken = (token: string): void => {
-    try {
-        window.localStorage.setItem(TOKEN_KEY, token);
-    } catch {
-        //storage blocked: user stays logged out
+    try{
+        return window.localStorage.setItem(TOKEN_KEY, token);
+    }catch{
+
     }
 }
 
 export const clearToken = (): void => {
-    try {
-        window.localStorage.removeItem(TOKEN_KEY);
-    } catch {
-        //ignore
+    try{
+        return window.localStorage.removeItem(TOKEN_KEY);
+    }catch{
+
     }
 }
 
@@ -37,7 +37,7 @@ export const clearToken = (): void => {
 
 let onUnauthorized: (() => void) | null = null;
 
-export const setUnauthorizedHandler = (fn: (() => void) | null): void => {
+export const setUnauthorizedHandler = (fn: (() => void) | null): void =>{
     onUnauthorized = fn;
 }
 
@@ -47,38 +47,38 @@ export class ApiError extends Error {
     status: number;
     details?: unknown;
 
-    constructor(status: number, message: string, details?: unknown) {
+    constructor(status: number, message: string, details?: unknown){
         super(message);
-        this.name = "ApiError";
+        this.name = "ApiError",
         this.status = status;
         this.details = details;
     }
 
     get fieldErrors(): Record<string, string> {
         const out: Record<string, string> = {};
-        if (!Array.isArray(this.details)) return out;
 
-        for (const d of this.details) {
-            if (d && typeof d === "object" && "field" in d && "message" in d) {
-                const field = String((d as { field: unknown }).field);
-                if (!(field in out)) out[field] = String((d as { message: unknown }).message);
+        if(!Array.isArray(this.details)) return out;
+
+        for(const d of this.details){
+            if(d && typeof d === "object" && "field" in d && "message" in d){
+                const field = String((d as {field: unknown}).field);
+                if(!(field in out)) out[field] = String((d as {message: unknown}).message);
             }
         }
         return out;
     }
 }
 
-export const errorMessage = (err: unknown): string =>
+export const errMessage = (err: unknown): string =>
     err instanceof Error ? err.message : "Something went wrong";
 
 /* ---------- request ---------- */
-
-type QueryValue = string | number | boolean | null | undefined;
+type QueryValue = number | string | boolean | null | undefined;
 
 export interface RequestOptions {
-    query?: Record<string, QueryValue>; //set false for public routes so no token is sent
+    query?: Record<string, QueryValue>;
     auth?: boolean;
-    signal?: AbortSignal; // pass "no-store" in server components that must always show fresh data
+    signal?: AbortSignal;
     cache?: RequestCache;
 }
 
@@ -86,13 +86,13 @@ async function request<T>(
     method: string,
     path: string,
     body?: unknown,
-    opts: RequestOptions = {}
+    opts: RequestOptions = {},
 
 ): Promise<T> {
     const url = new URL(`${API_URL}${path}`);
 
-    for (const [key, value] of Object.entries(opts.query ?? {})) {
-        if (value === undefined || value === null || value === "") continue;
+    for(const[key, value] of Object.entries(opts.query ?? {})){
+        if(value === undefined || value === null || value === "")continue;
         url.searchParams.set(key, String(value));
     }
 
@@ -102,22 +102,23 @@ async function request<T>(
     const token = opts.auth === false ? null : getToken();
     if(token) headers.Authorization = `Bearer ${token}`;
 
-    let res: Response;
+    let res: Response
     try {
-        res = await fetch(url, {
+        res = await fetch(url,{
             method,
             headers,
-            body: body !== undefined ? JSON.stringify(body) : undefined,
+            body: body !== "undefined" ? JSON.stringify(body) : undefined,
             signal: opts.signal,
             cache: opts.cache,
         });
-    } catch (err) {
-        if (err instanceof DOMException && err.name === "AbortError") throw err;
-        throw new ApiError(0, "Cannot reach the server. check your connection and try again.");
+    }catch(err){
+        if(err instanceof DOMException && err.name === "AbortError") throw err;
+        throw new ApiError(0, "Cannot reach the servers. Please check ur internet connection and try again");
     }
 
     const text = await res.text();
     let data: unknown = null;
+
     if(text){
         try{
             data = JSON.parse(text);
@@ -127,23 +128,22 @@ async function request<T>(
     }
 
     if(!res.ok){
-       const errBody = (data ?? {}) as Partial<ApiErrorBody>;
-       
-       if(res.status === 401 && token ) onUnauthorized?.();
-
-       throw new ApiError(res.status, errBody.error ?? "Something went wrong", errBody.details);
+        const errBody = (data ?? {}) as Partial<ApiErrorBody>;
+        if(res.status === 401 && token) onUnauthorized?.();
+        throw new ApiError(res.status, errBody.error ?? "Something went wrong", errBody.details);
     }
 
     return data as T;
-
 }
 
 export const api = {
-    get: <T>(path: string, opts?: RequestOptions) => request<T>("GET", path, undefined, opts),
-    post: <T>(path: string, body?: unknown, opts?: RequestOptions) => request<T>("POST", path, body, opts),
+    get:<T>(path: string, opts?: RequestOptions) =>  request<T>("GET", path, undefined, opts),
+    post:<T>(path: string, body?: unknown, opts?: RequestOptions) =>  request<T>("POST", path, body, opts),
     put: <T>(path: string, body?: unknown, opts?: RequestOptions) => request<T>("PUT", path, body, opts),
     patch: <T>(path: string, body?: unknown, opts?: RequestOptions) => request<T>("PATCH", path, body, opts),
-    delte: <T>(path: string, opts?: RequestOptions) => request<T>("DELETE", path, undefined, opts),
-};
+    delete: <T>(path: string, opts?: RequestOptions) => request<T>("DELETE", path, undefined, opts),
+}
+
+
 
 
