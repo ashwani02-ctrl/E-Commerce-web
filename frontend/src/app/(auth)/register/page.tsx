@@ -1,5 +1,5 @@
 "use client";
- 
+
 import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -20,18 +20,18 @@ import { getSafeNext, homePathForRole } from "@/lib/session";
 import { ApiError, errorMessage } from "@/lib/api";
 import { checkPassword, isPasswordValid, validateEmail, validateName } from "@/lib/validation";
 import type { RegisterInput } from "@/types/api";
- 
+
 type RoleChoice = RegisterInput["role"];
- 
+
 const ROLE_OPTIONS: { value: RoleChoice; label: string }[] = [
   { value: "buyer", label: "I want to buy" },
   { value: "seller", label: "I want to sell" },
 ];
- 
+
 export default function RegisterPage() {
   const router = useRouter();
-  const { user, isLoading, register, login } = useAuth();
- 
+  const { user, isLoading, register } = useAuth();
+
   const [role, setRole] = useState<RoleChoice>("buyer");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -39,34 +39,34 @@ export default function RegisterPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [formError, setFormError] = useState("");
   const [submitting, setSubmitting] = useState(false);
- 
+
   const checklist = checkPassword(password);
- 
+
   // runs after the automatic login below, and if a logged-in user opens /register
   useEffect(() => {
     if (!isLoading && user) {
       router.replace(getSafeNext() ?? homePathForRole(user.role));
     }
   }, [isLoading, user, router]);
- 
+
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (submitting) return;
- 
+
     setFormError("");
- 
+
     const found: Record<string, string> = {};
     const nameError = validateName(name);
     if (nameError) found.name = nameError;
     const emailError = validateEmail(email);
     if (emailError) found.email = emailError;
     if (!isPasswordValid(password)) found.password = "Your password doesn't meet all the requirements below";
- 
+
     setErrors(found);
     if (Object.keys(found).length > 0) return;
- 
+
     setSubmitting(true);
- 
+
     try {
       await register({ name: name.trim(), email: email.trim(), password, role });
     } catch (err) {
@@ -80,16 +80,16 @@ export default function RegisterPage() {
       setSubmitting(false);
       return;
     }
- 
+
     // the account exists now: go to the login page so the user can sign in cleanly
     router.push("/login");
     setSubmitting(false);
   }
- 
+
   return (
     <div className="grid min-h-screen grid-cols-1 lg:grid-cols-2">
       <LoginCard />
- 
+
       <div className="flex items-center justify-center bg-background p-6 sm:p-10">
         <div className="w-full max-w-md">
           <Link
@@ -99,7 +99,7 @@ export default function RegisterPage() {
             <span aria-hidden="true">←</span>
             <span>Back to Bazaar</span>
           </Link>
- 
+
           <Card className="w-full p-6 max-w-md border-none bg-transparent shadow-none">
             <CardHeader className="space-y-4 p-0">
               <CardTitle className="text-4xl font-black tracking-[-0.06em] text-brand-navy">
@@ -108,9 +108,8 @@ export default function RegisterPage() {
               <CardDescription className="text-base text-muted-foreground">
                 Join Bazaar to start shopping or selling.
               </CardDescription>
-              <CardAction className="pt-2"></CardAction>
             </CardHeader>
- 
+
             <form onSubmit={handleSubmit} noValidate>
               <CardContent className="space-y-6 p-0 pt-6">
                 {formError && (
@@ -121,7 +120,7 @@ export default function RegisterPage() {
                     {formError}
                   </p>
                 )}
- 
+
                 <div className="grid gap-2">
                   <span id="role-label" className="text-sm font-medium text-brand-navy">
                     Account type
@@ -138,18 +137,39 @@ export default function RegisterPage() {
                         aria-pressed={role === option.value}
                         disabled={submitting}
                         onClick={() => setRole(option.value)}
-                        className={`h-11 rounded-lg text-sm font-semibold transition-colors ${
-                          role === option.value
+                        className={`h-11 rounded-lg text-sm font-semibold transition-colors ${role === option.value
                             ? "bg-brand-navy text-white"
                             : "text-brand-navy hover:bg-white"
-                        }`}
+                          }`}
                       >
                         {option.label}
                       </button>
                     ))}
                   </div>
+                  {/* <div
+                    role="group"
+                    aria-labelledby="role-label"
+                    className="grid grid-cols-2 gap-2 rounded-xl bg-muted p-1.5"
+                  >
+                    {ROLE_OPTIONS.map((option) => (
+                      <Button
+                        key={option.value}
+                        type="button"
+                        aria-pressed={role === option.value}
+                        disabled={submitting}
+                        onClick={() => setRole(option.value)}
+                        className={`h-11 rounded-lg text-sm font-semibold bg-muted transition-colors ${role === option.value
+                          ? "bg-brand-navy text-white pointer-events-none cursor-pointer"
+                          : "text-brand-navy hover:bg-white"
+                          }`}
+                      >
+                        {option.label}
+                      </Button>
+                    ))}
+
+                  </div> */}
                 </div>
- 
+
                 <div className="grid gap-2">
                   <label htmlFor="name" className="text-sm font-medium text-brand-navy">
                     Full name
@@ -173,7 +193,7 @@ export default function RegisterPage() {
                     </p>
                   )}
                 </div>
- 
+
                 <div className="grid gap-2">
                   <label htmlFor="email" className="text-sm font-medium text-brand-navy">
                     Email
@@ -197,7 +217,7 @@ export default function RegisterPage() {
                     </p>
                   )}
                 </div>
- 
+
                 <div className="grid gap-2">
                   <label htmlFor="password" className="text-sm font-medium text-brand-navy">
                     Password
@@ -233,7 +253,7 @@ export default function RegisterPage() {
                   </ul>
                 </div>
               </CardContent>
- 
+
               <CardFooter className="mt-2 flex-col gap-4 p-0 pt-4">
                 <Button
                   type="submit"
@@ -242,7 +262,7 @@ export default function RegisterPage() {
                 >
                   {submitting ? "Creating account…" : "Create account"}
                 </Button>
- 
+
                 <p className="text-center text-sm text-muted-foreground pb-4">
                   Already have an account?{" "}
                   <Link href="/login" className="font-semibold text-brand-blue hover:underline">

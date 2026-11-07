@@ -69,7 +69,7 @@ export class ApiError extends Error {
     }
 }
 
-export const errMessage = (err: unknown): string =>
+export const errorMessage = (err: unknown): string =>
     err instanceof Error ? err.message : "Something went wrong";
 
 /* ---------- request ---------- */

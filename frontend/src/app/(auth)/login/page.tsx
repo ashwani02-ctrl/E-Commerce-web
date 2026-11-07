@@ -87,7 +87,7 @@ export default function Loginpage() {
                 Log in to Bazaar
               </CardTitle>
               <CardDescription className="text-base text-muted-foreground">
-                Use the role switcher to explore every prototype experience.
+               Your One-Stop Shop for Everything You Need.
               </CardDescription>
               <CardAction className="pt-2"></CardAction>
             </CardHeader>

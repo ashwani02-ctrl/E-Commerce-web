@@ -22,34 +22,34 @@ const USER_KEY = "bazaar_user";
 /* ---------- saved user (display only: the backend trusts the token, never this) ---------- */
  
 function readUser(): User | null {
-  try {
-    const raw = window.localStorage.getItem(USER_KEY);
-    if (!raw) return null;
-    const u = JSON.parse(raw) as Partial<User>;
-    if (typeof u.id === "number" && typeof u.role === "string") return u as User;
-  } catch {
-    /* corrupt value: treat as logged out */
+  try{
+   const raw = window.localStorage.getItem(USER_KEY);
+   if(!raw) return null;
+   const u = JSON.parse(raw) as Partial<User>;
+   if(typeof u.id === "number" && typeof u.role === "string") return u as User;
+  }catch{
+
   }
   return null;
 }
- 
+
 const writeUser = (user: User) => {
-  try {
+  try{
     window.localStorage.setItem(USER_KEY, JSON.stringify(user));
-  } catch {
-    /* ignore */
+  }catch{
+
   }
-};
- 
+}
+
 const clearSession = () => {
   clearToken();
   clearRoleCookie();
-  try {
+  try{
     window.localStorage.removeItem(USER_KEY);
-  } catch {
-    /* ignore */
+  }catch{
+
   }
-};
+}
  
 /* ---------- context ---------- */
  
@@ -63,84 +63,97 @@ interface AuthContextValue {
   register: (input: RegisterInput) => Promise<User>;
   logout: () => Promise<void>;
 }
- 
+
 const AuthContext = createContext<AuthContextValue | null>(null);
- 
-export function AuthProvider({ children }: { children: ReactNode }) {
+
+export function AuthProvider({children} : {children: ReactNode}){
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
- 
-  // restore the login after a refresh
-  useEffect(() => {
+
+   // restore the login after a refresh
+   useEffect(() => {
     const stored = readUser();
-    if (getToken() && stored) {
+    if(getToken() && stored){
       setUser(stored);
-      setRoleCookie(stored.role); // keeps proxy.ts in sync after a refresh
-    } else {
+      setRoleCookie(stored.role);
+    }else{
       clearSession();
     }
     setIsLoading(false);
-  }, []);
- 
-  // any request that gets a 401 while logged in ends the session
-  useEffect(() => {
-    setUnauthorizedHandler(() => {
-      clearSession();
-      setUser(null);
-      router.replace("/login");
-    });
-    return () => setUnauthorizedHandler(null);
-  }, [router]);
- 
-  // logging in or out in another tab updates this one
-  useEffect(() => {
-    const onStorage = (e: StorageEvent) => {
-      if (e.key !== "bazaar_token" && e.key !== USER_KEY) return;
-      setUser(getToken() ? readUser() : null);
-    };
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
-  }, []);
- 
-  const login = useCallback(async (email: string, password: string) => {
-    const res = await api.post<LoginResponse>("/auth/login", { email, password }, { auth: false });
-    setToken(res.token);
-    writeUser(res.user);
-    setRoleCookie(res.user.role);
-    setUser(res.user);
-    return res.user;
-  }, []);
- 
-  const register = useCallback(
-    (input: RegisterInput) => api.post<User>("/auth/register", input, { auth: false }),
-    []
-  );
- 
-  const logout = useCallback(async () => {
-    try {
-      // revokes the token on the server; fine if it fails
-      if (getToken()) await api.post("/auth/logout");
-    } catch {
-      /* the local logout below still happens */
-    } finally {
-      clearSession();
-      setUser(null);
-      router.push("/login");
-    }
-  }, [router]);
- 
-  const value = useMemo<AuthContextValue>(
-    () => ({ user, isLoading, isAuthenticated: user !== null, login, register, logout }),
-    [user, isLoading, login, register, logout]
-  );
- 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+   }, []); //what about token?
+
+    // any request that gets a 401 while logged in ends the session
+    useEffect(() => {
+      setUnauthorizedHandler(() => {
+        clearSession();
+        setUser(null);
+        router.replace("/login");
+      });
+      return () => setUnauthorizedHandler(null);
+    },[router]); //why router?
+
+    // logging in or out in another tab updates this one
+    useEffect(() => {
+      const onStorage = (e: StorageEvent) => {
+        if(e.key !== "bazaar_token" && e.key !== USER_KEY) return;
+        setUser(getToken() ? readUser() : null);
+      }
+      window.addEventListener("storage", onStorage);
+      return () => window.removeEventListener("storage", onStorage);
+    },[]);
+
+    const login = useCallback(async(email: string, password: string) => {
+      const res = await api.post<LoginResponse>(
+        "/auth/login",
+        {email, password},
+        {auth: false}
+      );
+
+      setToken(res.token);
+      writeUser(res.user);
+      setRoleCookie(res.user.role);
+      setUser(res.user);
+
+      return res.user;
+    },[]);
+
+    const register = useCallback((input: RegisterInput) => api.post<User>("/auth/register", input, {auth: false},),[]);
+    //it wont return anything like an error?
+
+    const logout = useCallback(async () => {
+      try{
+        if(getToken()){
+         await api.post("/auth/logout");
+        }
+      }catch{
+
+      }finally{
+        clearSession();
+        setUser(null);
+        router.push("/login");
+
+      }
+    },[router]);
+
+    const value = useMemo<AuthContextValue>(
+      () => ({
+        user,
+        isLoading,
+        isAuthenticated: user !== null,
+        login,
+        register,
+        logout
+      }),
+      [user, isLoading, login, register, logout] //why not isauthenticated 
+    );
+
+    return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
- 
-export function useAuth(): AuthContextValue {
+
+export function useAuth(): AuthContextValue{
   const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth must be used inside <AuthProvider>");
+  if(!ctx) throw new Error("useAuth must be used inside <AuthProvider>");
   return ctx;
 }
 
