@@ -146,28 +146,7 @@ export default function RegisterPage() {
                       </button>
                     ))}
                   </div>
-                  {/* <div
-                    role="group"
-                    aria-labelledby="role-label"
-                    className="grid grid-cols-2 gap-2 rounded-xl bg-muted p-1.5"
-                  >
-                    {ROLE_OPTIONS.map((option) => (
-                      <Button
-                        key={option.value}
-                        type="button"
-                        aria-pressed={role === option.value}
-                        disabled={submitting}
-                        onClick={() => setRole(option.value)}
-                        className={`h-11 rounded-lg text-sm font-semibold bg-muted transition-colors ${role === option.value
-                          ? "bg-brand-navy text-white pointer-events-none cursor-pointer"
-                          : "text-brand-navy hover:bg-white"
-                          }`}
-                      >
-                        {option.label}
-                      </Button>
-                    ))}
-
-                  </div> */}
+                  
                 </div>
 
                 <div className="grid gap-2">
