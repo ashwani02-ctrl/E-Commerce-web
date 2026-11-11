@@ -1,6 +1,9 @@
 "use client"
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DEFAULT_SORT } from "@/constants/product";
 import { ProductSort } from "@/types/api";
+import { Input } from "@base-ui/react";
 import { usePathname, useRouter } from "next/navigation";
 import { FormEvent, useState, useTransition } from "react";
 
@@ -47,6 +50,80 @@ export function ProductFilters({categories, search, category, sort}: Props){
 
     const hasFilters = Boolean(search || category);
     return (
-        <div>dd</div>
-    )
+        <div className="space-y-4" aria-busy={isPending}>
+            <div className="flex flex-col gap-3 sm:flex-row">
+                <form>
+                    <Input
+                    type="search"
+                    name="search"
+                    aria-label="Search products"
+                    placeholder="Search by name, brand or description"
+                    value={term}
+                    onChange={(e) => setTerm(e.target.value)}
+                    className="h-11 bg-white" 
+                    >
+                    </Input>
+                    <Button type="submit" className="h-11 bg-brand-navy px-6 text-white hover:bg-brand-blue">
+                        Search
+                    </Button>
+                </form>
+
+                <Select value={sort} onValueChange={(value) => go({ sort: value as ProductSort})}>
+                    <SelectTrigger aria-label="Sort products" className="h-11 w-full bg-white sm:w-56">
+                        <SelectValue/>
+                    </SelectTrigger>
+                    <SelectContent>
+                        {SORT_OPTIONS.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>
+                                {option.label}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2" role="group" aria-label="categories">
+                <Button
+                type="button"
+                size="sm"
+                variant={category === ""? "default" : "outline"}
+                aria-pressed={category === ""}
+                onClick={() => go({category: ""})}
+                className={category === ""? "bg-brand-navy text-white hover:bg-brand-blue": ""}
+                >
+                    All
+                </Button>
+                {categories.map((item) => {
+                    const active = item === category;
+                    return (
+                        <Button
+                        key={item}
+                        type="button"
+                        size="sm"
+                        variant={active ? "default" : "outline"}
+                        aria-pressed={active}
+                        onClick={() => go({category: item})}
+                        className={active ? "bg-brand-navy text-white hover:bg-brand-blue" : ""}
+                        >
+                            {prettify(item)}
+                        </Button>
+                    );
+                })}
+
+                {hasFilters && (
+                    <Button
+                    type="button"
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => {
+                        setTerm("");
+                            go({search: "", category: ""});
+                    }}
+                    >
+                        Clear filters
+                    </Button>
+                )}
+            </div>
+        </div>
+    );
 }

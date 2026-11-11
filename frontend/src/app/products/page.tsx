@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import { ProductFilters } from "../_components/products/Productfilters";
 import { api, ApiError, errorMessage } from "@/lib/api";
 import { DEFAULT_SORT } from "@/constants/product";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import ProductGrid from "../_components/products/ProductGrid";
 export const metadata: Metadata = { title: "Products | Bazaar" };
 
 const SORTS: ProductSort[] = ["newest", "price_asc", "price_desc", "rating"];
@@ -39,6 +41,8 @@ export default async function Productpage({ searchParams }: { searchParams: Sear
                 cache: "no-store"
             }),
         ]);
+        console.log("products", data);
+        console.log("categories", categories);
 
     } catch (err) {
         error = errorMessage(err);
@@ -65,6 +69,21 @@ export default async function Productpage({ searchParams }: { searchParams: Sear
                     </p>
                 )}
             </header>
+
+            <ProductFilters categories={categories} search={search} category={category} sort={sort}/>
+
+            {error ? (
+                <Alert variant="destructive" role="alert">
+                    <AlertTitle>we couldn&apos;t load the products</AlertTitle>
+                    <AlertDescription>{error}</AlertDescription>
+                </Alert>
+            ) : (
+                data && (
+                    <>
+                    <ProductGrid products={data.products}/>
+                    </>
+                )
+            )}
 
 
         </main>
