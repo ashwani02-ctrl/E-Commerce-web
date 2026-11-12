@@ -112,6 +112,7 @@ async function request<T>(
             cache: opts.cache,
         });
         // console.log("REQUEST URL:", url.toString());
+        
     }catch(err){
         if(err instanceof DOMException && err.name === "AbortError") throw err;
         throw new ApiError(0, "Cannot reach the servers. Please check ur internet connection and try again");

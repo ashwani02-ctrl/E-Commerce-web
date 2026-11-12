@@ -1,10 +1,12 @@
 import { ProductListResponse, ProductSort } from "@/types/api";
 import type { Metadata } from "next";
-import { ProductFilters } from "../_components/products/Productfilters";
+import { ProductFilters } from "../../_components/products/Productfilters";
 import { api, ApiError, errorMessage } from "@/lib/api";
 import { DEFAULT_SORT } from "@/constants/product";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import ProductGrid from "../_components/products/ProductGrid";
+import ProductGrid from "../../_components/products/ProductGrid";
+import Nav from "../../_components/navbar/nav";
+import { ProductPagination } from "../../_components/products/ProductPagination";
 export const metadata: Metadata = { title: "Products | Bazaar" };
 
 const SORTS: ProductSort[] = ["newest", "price_asc", "price_desc", "rating"];
@@ -81,6 +83,7 @@ export default async function Productpage({ searchParams }: { searchParams: Sear
                 data && (
                     <>
                     <ProductGrid products={data.products}/>
+                    <ProductPagination page={data.page} totalPages={data.totalPages} basePath="/products" params={keep} />
                     </>
                 )
             )}
