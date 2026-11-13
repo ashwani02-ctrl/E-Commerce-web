@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import authRoutes from "./routes/auth.js";
 import productRoutes from "./routes/products.js";
+import storeRoutes from "./routes/stores.js";
 import sellerRoutes from "./routes/seller.js";
 import buyerRoutes from "./routes/buyer.js";
 import helmet from "helmet";
@@ -34,6 +35,8 @@ server.get("/health", (req, res) => {
 server.use("/auth", authLimiter, authRoutes);
 
 server.use("/products", productRoutes);
+
+server.use("/stores", storeRoutes);
 
 server.use("/seller", requireAuth, requireRole("seller"), sellerRoutes);
 
